@@ -4,11 +4,11 @@
 # Description:  Zoom Recording Downloader is a cross-platform Python script
 #               that uses Zoom's API (v2) to download and organize all
 #               cloud recordings from a Zoom account onto local storage.
+#               This fork allows to delete already downloaded recordings.
 #               This Python script uses the OAuth method of accessing the Zoom API
-# Created:      2020-04-26
-# Author:       Ricardo Rodrigues
-# Website:      https://github.com/ricardorodrigues-ca/zoom-recording-downloader
-# Forked from:  https://gist.github.com/danaspiegel/c33004e52ffacb60c24215abf8301680
+# Created:      2024-07-15
+# Author:       el-wynn
+# Forked From:  https://github.com/ricardorodrigues-ca/zoom-recording-downloader
 
 # system libraries
 import base64
@@ -19,12 +19,28 @@ import re as regex
 import signal
 import sys as system
 
+MIN_PYTHON_VERSION = (3, 9)
+if not system.version_info >= MIN_PYTHON_VERSION:
+	system.exit("Python %s.%s or later is required.\n" % MIN_PYTHON_VERSION)
+
 # installed libraries
 import dateutil.parser as parser
 import pathvalidate as path_validate
 import requests
 import tqdm as progress_bar
 from zoneinfo import ZoneInfo
+
+CONF_PATH = "zoom-recording-downloader.conf"
+with open(CONF_PATH, encoding="utf-8-sig") as json_file:
+    CONF = json.loads(json_file.read())
+
+ACCOUNT_ID = CONF["OAuth"]["account_id"]
+CLIENT_ID = CONF["OAuth"]["client_id"]
+CLIENT_SECRET = CONF["OAuth"]["client_secret"]
+
+APP_VERSION = "3.0 (OAuth)"
+
+API_ENDPOINT_USER_LIST = "https://api.zoom.us/v2/users"
 
 class Color:
     PURPLE = "\033[95m"
@@ -227,6 +243,15 @@ def list_recordings(email):
 
     return recordings
 
+def delete_recording(meetingId):
+    response = requests.delete(
+        url=f"https://api.zoom.us/v2/meetings/{meetingId}/recordings",
+        headers=AUTHORIZATION_HEADER
+    )
+    if not response.ok :
+        raise Exception
+    return response
+
 
 def download_recording(download_url, email, filename, folder_name):
     dl_dir = os.sep.join([DOWNLOAD_DIRECTORY, folder_name])
@@ -292,25 +317,7 @@ def main():
     print(f"""
         {Color.DARK_CYAN}
 
-
-                             ,*****************.
-                          *************************
-                        *****************************
-                      *********************************
-                     ******               ******* ******
-                    *******                .**    ******
-                    *******                       ******/
-                    *******                       /******
-                    ///////                 //    //////
-                    ///////*              ./////.//////
-                     ////////////////////////////////*
-                       /////////////////////////////
-                          /////////////////////////
-                             ,/////////////////
-
-                        Zoom Recording Downloader
-
-                            Version {APP_VERSION}
+        Zoom Recording Downloader - Version {APP_VERSION}
 
         {Color.END}
     """)
@@ -337,6 +344,19 @@ def main():
             meeting_id = recording["uuid"]
             if meeting_id in COMPLETED_MEETING_IDS:
                 print(f"==> Skipping already downloaded meeting: {meeting_id}")
+                try:
+                    delete_response = delete_recording(meeting_id)
+                except Exception:
+                    print(
+                        f"{delete_response}\n"
+                        f"{Color.RED}### Cannot delete recording {Color.END}"
+                        f"'{meeting_id}'\n"
+                    )
+                    continue
+                print(
+                    f"{Color.DARK_CYAN}### Meeting put to trash: {Color.END}"
+                    f"'{meeting_id}'\n"
+                )
 
                 continue
 

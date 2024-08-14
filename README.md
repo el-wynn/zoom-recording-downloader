@@ -1,18 +1,17 @@
 # zoom-recording-downloader
 
-[![Python 3.6](https://img.shields.io/badge/python-3.6%20%2B-blue.svg)](https://www.python.org/) [![License](https://img.shields.io/badge/license-MIT-brown.svg)](https://raw.githubusercontent.com/ricardorodrigues-ca/zoom-recording-downloader/master/LICENSE)
+[![Python 3.9](https://img.shields.io/badge/python-3.9%20%2B-blue.svg)](https://www.python.org/) [![License](https://img.shields.io/badge/license-MIT-brown.svg)](https://raw.githubusercontent.com/el-wynn/zoom-recording-downloader/master/LICENSE)
 
 **Zoom Recording Downloader** is a cross-platform Python script that uses Zoom's API (v2) to download and organize all cloud recordings from a Zoom account onto local storage.
+This fork allows to automatically put recordings into trash once download is complete, allowing backing up without thinking of Zoom's storage limitation.
 
-## Screenshot ##
-![screenshot](screenshot.png)
 
 ## Installation ##
 
-_Attention: You will need [Python 3.6](https://www.python.org/downloads/) or greater_
+_Attention: You will need [Python 3.9](https://www.python.org/downloads/) or greater_
 
 ```sh
-$ git clone https://github.com/ricardorodrigues-ca/zoom-recording-downloader
+$ git clone https://github.com/el-wynn/zoom-recording-downloader
 $ cd zoom-recording-downloader
 $ pip3 install -r requirements.txt
 ```
@@ -57,8 +56,8 @@ _Attention: You will need a [Zoom Developer account](https://marketplace.zoom.us
 ```
       {
               "Recordings": {
-                      "start_date": "2023-01-01",
-                      "end_date": "2023-12-31"
+                      "start_date": "2024-01-01",
+                      "end_date": "2024-12-31"
               }
       }
 ```
@@ -71,7 +70,7 @@ _Attention: You will need a [Zoom Developer account](https://marketplace.zoom.us
 ```
       {
               "Recordings": {
-                      "start_year": "2023",
+                      "start_year": "2024",
                       "start_month": "1",
                       "start_day": "1"
               }
