@@ -15,9 +15,13 @@ completed-downloads.log
 
 # Ignore Visual Studio Code Workspace
 *.code-workspace
+*.idea
 
 # Ignore conf file
 zoom-recording-downloader.conf
+
+# Ignore launcher
+zoom_recording_launcher.sh
 
 # Ignore vitrual env
 env
